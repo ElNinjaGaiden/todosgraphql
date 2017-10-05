@@ -4,7 +4,7 @@ import { List } from 'material-ui/List';
 import Subheader from 'material-ui/Subheader';
 import Divider from 'material-ui/Divider';
 import Paper from 'material-ui/Paper';
-import TodoEditor from './TodoEditor';
+import TodoEditor from '../components/TodoEditor';
 import TodoItem from '../components/TodoItem';
 
 const style = {

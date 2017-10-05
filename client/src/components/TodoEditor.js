@@ -8,7 +8,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar';
 import { gql, graphql } from 'react-apollo';
 import { withRouter } from 'react-router';
-import { todosListQuery } from './Todos';
+import { todosListQuery } from '../views/Todos';
 import DeleteTodoButton from '../components/DeleteTodoButton';
 import UpdateTodoButton from '../components/UpdateTodoButton';
 
@@ -52,7 +52,7 @@ class TodoEditor extends Component {
         </Toolbar>
         <form style={style.formStyle}>
           <TextField hintText="Title" floatingLabelText="Title" fullWidth={true} value={this.state.title} onChange={this.handleTitle.bind(this)} />
-          <TextField hintText="Description" floatingLabelText="Description" multiLine={true} fullWidth={true} value={this.state.description} onChange={this.handleDescription.bind(this)}/>
+          <TextField hintText="Description" floatingLabelText="Description" multiLine={true} rows={2} fullWidth={true} value={this.state.description} onChange={this.handleDescription.bind(this)}/>
           <br />
           <DatePicker hintText="Due Date" floatingLabelText="Due Date" value={this.state.duedate} onChange={this.handleDueDate.bind(this)} autoOk={true} />
           <PrioritiesSelectField value={this.state.priorityId} onChange={this.handlePriority.bind(this)} />
