@@ -12,7 +12,7 @@ const AppBarComponent = () => (
         </div>
       }
       iconElementLeft={<IconButton href="/"><ActionHome /></IconButton>}
-      iconElementRight={<IconButton href="https://github.com/elninjagaiden" target="_blank"  ><ActionCode /></IconButton>}
+      iconElementRight={<IconButton href="https://github.com/ElNinjaGaiden/todosgraphql" target="_blank"  ><ActionCode /></IconButton>}
     />
   );
   
