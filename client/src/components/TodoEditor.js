@@ -137,8 +137,8 @@ class TodoEditor extends Component {
 }
 
 const addTodoMutation = gql`
-mutation CreateTodo($todo: CreatetodoInput!) {
-  createtodo(input: $todo) {
+mutation CreateTodo($todo: RegistertodoInput!) {
+  registertodo(input: $todo) {
     clientMutationId
   }
 }

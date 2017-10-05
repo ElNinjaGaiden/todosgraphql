@@ -44,28 +44,7 @@ begin
 end;
 $$ language plpgsql strict security definer;
 
-create function public.CreateTodo (
-  Title text,
-  Description text,
-  PriorityId integer,
-  StatusId integer,
-  CreatorId integer,
-  CreatedOn text,
-  DueDate text,
-  OwnerId integer
-) returns public.Todo as $$
-declare
-  todo public.Todo;
-begin
-  insert into public.Todo (Title, Description, PriorityId, StatusId, CreatorId, CreatedOn, DueDate, OwnerId) values
-    (Title, Description, PriorityId, StatusId, CreatorId, to_timestap(CreatedOn), to_date(DueDate, 'DD/MM/YYYY'), OwnerId)
-    returning * into todo;
-
-  return todo;
-end;
-$$ language plpgsql strict security definer;
-
-create function public.CreateTodo (
+create function public.RegisterTodo (
   Title text,
   Description text,
   PriorityId integer,
