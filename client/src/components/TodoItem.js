@@ -25,10 +25,10 @@ const TodoItem = ({ todo, onClick }) => {
     const priorityColor = todo.priorityByPriorityid.id === 1 ? greenA700 : (todo.priorityByPriorityid.id === 2 ? yellow500 : red500);
     return (
         <div>
-            <ListItem onClick={handleClick.bind(this)} key={todo.id} primaryText={todo.title} secondaryText={
+            <ListItem onClick={handleClick.bind(this)} key={todo.id} primaryText={<p className={'todo-details-title'}>{todo.title}</p>} secondaryText={
                 <div style={style.todo.details}>
-                    <p>{todo.description}</p>
-                    <div style={style.todo.details.fields}>
+                    <p className={'todo-details-description'}>{todo.description}</p>
+                    <div style={style.todo.details.fields} className={'todo-details-fields'}>
                         <div className={'todo-details-fields-col'}>
                             <div className={'todo-details-field-header'}>Status:</div>
                             <div>{todo.todostatusByStatusid.name}</div>

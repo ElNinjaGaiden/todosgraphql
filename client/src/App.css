@@ -1,3 +1,17 @@
+.todo-details-title {
+  margin-bottom: 7px;
+  font-size: 22px;
+}
+
+.todo-details-description {
+  margin-top: 0;
+}
+
+.todo-details-fields {
+  font-size: 12px;
+  line-height: 12px;
+}
+
 .todo-details-fields-col {
   -webkit-box-flex: 1;
 }
