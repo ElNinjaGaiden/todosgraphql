@@ -50,12 +50,12 @@ create function public.CreateTodo (
   PriorityId integer,
   StatusId integer,
   CreatorId integer,
-  CreatedOn text
+  CreatedOn text,
   DueDate text,
   OwnerId integer
 ) returns public.Todo as $$
 declare
-  otod public.Todo;
+  todo public.Todo;
 begin
   insert into public.Todo (Title, Description, PriorityId, StatusId, CreatorId, CreatedOn, DueDate, OwnerId) values
     (Title, Description, PriorityId, StatusId, CreatorId, to_timestap(CreatedOn), to_date(DueDate, 'DD/MM/YYYY'), OwnerId)
