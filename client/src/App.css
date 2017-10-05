@@ -1,0 +1,15 @@
+.todo-details-fields-col {
+  -webkit-box-flex: 1;
+}
+
+.todo-details-field-header {
+  font-weight: bold;
+}
+
+.todo-editor-toolbar-button {
+  margin: 10px 5px !important;
+}
+
+.app-bar-title span {
+  font-size: 14px;
+}
