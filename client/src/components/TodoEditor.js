@@ -6,9 +6,9 @@ import PrioritiesSelectField from '../components/PrioritiesSelectField';
 import UsersSelectField from '../components/UsersSelectField';
 import RaisedButton from 'material-ui/RaisedButton';
 import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar';
-import { gql, graphql } from 'react-apollo';
+import { graphql } from 'react-apollo';
 import { withRouter } from 'react-router';
-import { todosListQuery } from '../views/Todos';
+import { todosListQuery, addTodoMutation } from '../data/Todos';
 import DeleteTodoButton from '../components/DeleteTodoButton';
 import UpdateTodoButton from '../components/UpdateTodoButton';
 
@@ -135,14 +135,6 @@ class TodoEditor extends Component {
 
   }
 }
-
-const addTodoMutation = gql`
-mutation CreateTodo($todo: RegistertodoInput!) {
-  registertodo(input: $todo) {
-    clientMutationId
-  }
-}
-`;
 
 const style = {
   paperStyle: {

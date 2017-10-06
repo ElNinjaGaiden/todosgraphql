@@ -1,19 +1,8 @@
 import React, { Component } from 'react';
-import { gql, graphql } from 'react-apollo';
+import { graphql } from 'react-apollo';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
-
-const userListQuery = gql`
-query UsersListQuery {
-    allUsers {
-        nodes {
-            id
-            firstname
-            lastname
-        }
-    }
-}
-`;
+import { userListQuery } from '../data/Users';
 
 class UsersSelectFieldTemplate extends Component {
 

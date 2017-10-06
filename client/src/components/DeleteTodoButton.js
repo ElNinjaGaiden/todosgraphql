@@ -1,15 +1,7 @@
 import React from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
-import { gql, graphql } from 'react-apollo';
-import { todosListQuery } from '../views/Todos';
-
-const deleteTodoMutation = gql`
-mutation DeleteTodo($input: DeleteTodoByIdInput!) {
-    deleteTodoById(input: $input) {
-    clientMutationId
-  }
-}
-`;
+import { graphql } from 'react-apollo';
+import { todosListQuery, deleteTodoMutation } from '../data/Todos';
 
 const DeleteTodoButtonTemplate = ({mutate, onDelete, todoId}) => {
 

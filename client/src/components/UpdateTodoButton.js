@@ -1,15 +1,7 @@
 import React from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
-import { gql, graphql } from 'react-apollo';
-import { todosListQuery } from '../views/Todos';
-
-const updateTodoMutation = gql`
-mutation UpdateTodoById($input: UpdateTodoByIdInput!) {
-    updateTodoById(input: $input) {
-        clientMutationId
-    }
-}
-`;
+import { graphql } from 'react-apollo';
+import { todosListQuery, updateTodoMutation } from '../data/Todos';
 
 const UpdateTodoButtonTemplate = ({mutate, onUpdate, todo}) => {
 

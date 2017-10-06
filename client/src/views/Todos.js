@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { gql, graphql } from 'react-apollo';
+import { graphql } from 'react-apollo';
 import { List } from 'material-ui/List';
 import Subheader from 'material-ui/Subheader';
 import Divider from 'material-ui/Divider';
 import Paper from 'material-ui/Paper';
 import TodoEditor from '../components/TodoEditor';
 import TodoItem from '../components/TodoItem';
+import { todosListQuery } from '../data/Todos';
 
 const style = {
     grid: {
@@ -63,36 +64,5 @@ class TodosViewTemplate extends Component {
     }
 }
 
-export const todosListQuery = gql`
-query TodosListQuery {
-    allTodos {
-        nodes {
-            id
-            title
-            description
-            todostatusByStatusid {
-                id
-                name
-            }
-            priorityByPriorityid {
-                id
-                name
-            }
-            userByCreatorid {
-                id
-                firstname
-                lastname
-            }
-            userByOwnerid {
-                id
-                firstname
-                lastname
-            }
-            createdon
-            duedate
-        }
-    }
-}
-`;
 const TodosView = graphql(todosListQuery)(TodosViewTemplate);
 export default TodosView;
