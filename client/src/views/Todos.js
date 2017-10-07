@@ -9,6 +9,7 @@ import TodoEditor from '../components/TodoEditor';
 import TodoItem from '../components/TodoItem';
 import { todosListQuery } from '../data/Todos';
 import { lightBlue600 } from 'material-ui/styles/colors';
+import AuthenticatedView from './AuthenticatedView';
 
 const style = {
     grid: {
@@ -71,5 +72,5 @@ class TodosViewTemplate extends Component {
     }
 }
 
-const TodosView = graphql(todosListQuery)(TodosViewTemplate);
+const TodosView = AuthenticatedView(graphql(todosListQuery)(TodosViewTemplate));
 export default TodosView;
