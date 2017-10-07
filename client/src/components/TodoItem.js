@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { ListItem } from 'material-ui/List';
 import Divider from 'material-ui/Divider';
 import Avatar from 'material-ui/Avatar';
-import { red500, yellow500, greenA700 } from 'material-ui/styles/colors';
+import { red500, yellow500, greenA700, grey400 } from 'material-ui/styles/colors';
 import noAvatar from '../NoAvatar.jpg';
 
 const style = {
@@ -57,7 +57,12 @@ class TodoItem extends Component {
         return (
             <div>
                 <ListItem onClick={this.handleClick.bind(this)} key={todo.id} 
-                    primaryText={<p className={'todo-details-title'}>{todo.title}</p>} 
+                    primaryText={
+                    <div className={'todo-details-title'}>
+                        <p>{todo.title}</p>
+                        <span className={'todo-details-id'} style={{color: grey400}}>#{todo.id}</span>
+                    </div>
+                    } 
                     leftAvatar={<Avatar src={this.state.avatar} style={style.todo.details.avatar} />}
                     innerDivStyle={style.todo.details.innerDiv}
                     secondaryText={

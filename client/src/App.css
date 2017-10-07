@@ -1,6 +1,18 @@
-.todo-details-title {
+.todos-list {
+  padding: 0 !important;
+}
+
+.todo-details-title p {
   margin-bottom: 7px;
   font-size: 22px;
+  position: relative;
+}
+
+.todo-details-title span.todo-details-id {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 12px;
 }
 
 .todo-details-avatar {

@@ -2,11 +2,13 @@ import React, { Component } from 'react';
 import { graphql } from 'react-apollo';
 import { List } from 'material-ui/List';
 import Subheader from 'material-ui/Subheader';
+import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar';
 import Divider from 'material-ui/Divider';
 import Paper from 'material-ui/Paper';
 import TodoEditor from '../components/TodoEditor';
 import TodoItem from '../components/TodoItem';
 import { todosListQuery } from '../data/Todos';
+import { lightBlue600 } from 'material-ui/styles/colors';
 
 const style = {
     grid: {
@@ -46,8 +48,13 @@ class TodosViewTemplate extends Component {
             <div style={style.grid}>
                 <div>
                     <Paper style={style.todosList}>
-                        <List>
-                            <Subheader>{allTodos.nodes.length ? 'Todos' : 'No todos available yet'}</Subheader>
+                        <Toolbar>
+                            <ToolbarGroup>
+                                <ToolbarTitle text={allTodos.nodes.length ? 'Todos' : 'No todos available yet'} />
+                            </ToolbarGroup>
+                        </Toolbar>
+                        <List className={'todos-list'}>
+                            {/* <Subheader style={{backgroundColor: lightBlue600, color: 'white'}}>{allTodos.nodes.length ? 'Todos' : 'No todos available yet'}</Subheader> */}
                             <Divider />
                             { allTodos.nodes.map(n => <TodoItem key={n.id} todo={n} onClick={this.onItemClick.bind(this)} />) }
                         </List>
