@@ -3,7 +3,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import { graphql } from 'react-apollo';
 import { todosListQuery, updateTodoMutation } from '../data/Todos';
 
-const UpdateTodoButtonTemplate = ({mutate, onUpdate, todo}) => {
+const UpdateTodoButtonTemplate = ({mutate, onUpdate, todo, sortCriteria}) => {
 
     const onUpdateClick = () => {
 
@@ -23,7 +23,14 @@ const UpdateTodoButtonTemplate = ({mutate, onUpdate, todo}) => {
                   }
               }
             },
-            refetchQueries: [ { query: todosListQuery }]
+            refetchQueries: [
+              { 
+                query: todosListQuery,
+                variables: {
+                  sortCriteria: sortCriteria
+                }
+              }
+            ]
           })
           .then(res => {
               if(typeof onUpdate === 'function') {

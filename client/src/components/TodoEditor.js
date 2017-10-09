@@ -6,17 +6,27 @@ import PrioritiesSelectField from '../components/PrioritiesSelectField';
 import UsersSelectField from '../components/UsersSelectField';
 import RaisedButton from 'material-ui/RaisedButton';
 import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar';
-import { graphql } from 'react-apollo';
-import { withRouter } from 'react-router';
-import { todosListQuery, addTodoMutation } from '../data/Todos';
+import AddTodoButton from '../components/AddTodoButton';
 import DeleteTodoButton from '../components/DeleteTodoButton';
 import UpdateTodoButton from '../components/UpdateTodoButton';
+
+const style = {
+  paperStyle: {
+    margin: 20,
+    width: 500
+  },
+  formStyle: {
+    padding: 10
+  }
+};
 
 class TodoEditor extends Component {
 
   constructor (props) {
     super(props);
-    this.state = this.getEmptyTodo();
+    this.state = {
+      todo: this.getEmptyTodo()
+    };
   }
 
   getEmptyTodo = () => {
@@ -34,12 +44,12 @@ class TodoEditor extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const newState = Object.assign({}, nextProps);
-    if(nextProps.duedate && typeof nextProps.duedate === 'string') {
+    const newTodo = Object.assign(this.state.todo, nextProps);
+    if(newTodo.duedate && typeof newTodo.duedate === 'string') {
       const duedateparts = nextProps.duedate.split('-');
-      newState.duedate = new Date(parseInt(duedateparts[0]), parseInt(duedateparts[1]) - 1, parseInt(duedateparts[2]));
+      newTodo.duedate = new Date(parseInt(duedateparts[0]), parseInt(duedateparts[1]) - 1, parseInt(duedateparts[2]));
     }
-    this.setState(newState);
+    this.setState({todo: newTodo});
   }
 
   render () {
@@ -51,25 +61,26 @@ class TodoEditor extends Component {
           </ToolbarGroup>
         </Toolbar>
         <form style={style.formStyle}>
-          <TextField hintText="Title" floatingLabelText="Title" fullWidth={true} value={this.state.title} onChange={this.handleTitle.bind(this)} />
-          <TextField hintText="Description" floatingLabelText="Description" multiLine={true} rows={2} fullWidth={true} value={this.state.description} onChange={this.handleDescription.bind(this)}/>
+          <TextField hintText="Title" floatingLabelText="Title" fullWidth={true} value={this.state.todo.title} onChange={this.handleTitle.bind(this)} />
+          <TextField hintText="Description" floatingLabelText="Description" multiLine={true} rows={2} fullWidth={true} value={this.state.todo.description} onChange={this.handleDescription.bind(this)}/>
           <br />
-          <DatePicker hintText="Due Date" floatingLabelText="Due Date" value={this.state.duedate} onChange={this.handleDueDate.bind(this)} autoOk={true} />
-          <PrioritiesSelectField value={this.state.priorityId} onChange={this.handlePriority.bind(this)} />
-          <UsersSelectField value={this.state.ownerId} onChange={this.handleOwner.bind(this)} />
+          <DatePicker hintText="Due Date" floatingLabelText="Due Date" value={this.state.todo.duedate} onChange={this.handleDueDate.bind(this)} autoOk={true} />
+          <PrioritiesSelectField value={this.state.todo.priorityId} onChange={this.handlePriority.bind(this)} />
+          <UsersSelectField value={this.state.todo.ownerId} onChange={this.handleOwner.bind(this)} />
         </form>
         <Toolbar>
           <ToolbarGroup firstChild={true} />
           <ToolbarGroup lastChild={true}>
             <RaisedButton className={'todo-editor-toolbar-button'} label="Clear" primary={true} onClick={this.onClearClick.bind(this)} />
             {
-              this.state.id && <DeleteTodoButton todoId={this.state.id} onDelete={this.onDelete.bind(this)} />
+              this.state.todo.id && <DeleteTodoButton todoId={this.state.todo.id} onDelete={this.onDelete.bind(this)} sortCriteria={this.props.sortCriteria} />
             }
             {
-              !this.state.id && <RaisedButton className={'todo-editor-toolbar-button'} label="Add" primary={true} onClick={this.onSaveClick.bind(this)} />
+              //!this.state.todo.id && <RaisedButton className={'todo-editor-toolbar-button'} label="Add" primary={true} onClick={this.onSaveClick.bind(this)} />
+              !this.state.todo.id && <AddTodoButton  onAdd={this.onAdd.bind(this)} todo={this.state.todo} sortCriteria={this.props.sortCriteria} />
             }
             {
-              this.state.id && <UpdateTodoButton onUpdate={this.onUpdate.bind(this)} todo={this.state} />
+              this.state.todo.id && <UpdateTodoButton onUpdate={this.onUpdate.bind(this)} todo={this.state.todo} sortCriteria={this.props.sortCriteria} />
             }
           </ToolbarGroup>
         </Toolbar>
@@ -78,53 +89,36 @@ class TodoEditor extends Component {
   }
 
   handleTitle(event) {
-    this.setState({ title: event.target.value });
+    const newTodo = Object.assign(this.state.todo, { title: event.target.value });
+    this.setState({ todo: newTodo });
   }
 
   handleDescription(event) {
-    this.setState({ description: event.target.value });
+    const newTodo = Object.assign(this.state.todo, { description: event.target.value });
+    this.setState({ todo: newTodo });
   }
 
   handlePriority(event, index, value) {
-    this.setState({
-      priorityId: value
-    });
+    const newTodo = Object.assign(this.state.todo, { priorityId: value });
+    this.setState({ todo: newTodo });
   }
 
   handleOwner(event, index, value) {
-    this.setState({
-      ownerId: value
-    });
+    const newTodo = Object.assign(this.state.todo, { ownerId: value });
+    this.setState({ todo: newTodo });
   }
 
   handleDueDate = (event, date) => {
-    this.setState({ duedate: date });
+    const newTodo = Object.assign(this.state.todo, { duedate: date });
+    this.setState({ todo: newTodo });
   }
 
-  onSaveClick = () => {
-    const { mutate } = this.props;
-    const state = this.state;
-    mutate({
-      variables: {
-        todo: {
-          ownerid: state.ownerId,
-          title: state.title,
-          description: state.description,
-          priorityid: state.priorityId,
-          statusid: state.statusId,
-          creatorid: state.creatorId,
-          duedate: `${state.duedate.getFullYear()}-${state.duedate.getMonth() + 1}-${state.duedate.getDate()}`
-        }
-      },
-      refetchQueries: [ { query: todosListQuery }]
-    })
-    .then(res => {
-      this.onClearClick();
-    });
+  onAdd = () => {
+    this.onClearClick();
   }
 
   onClearClick = () => {
-    this.setState(this.getEmptyTodo());
+    this.setState({todo: this.getEmptyTodo()});
   }
 
   onDelete = () => {
@@ -132,19 +126,7 @@ class TodoEditor extends Component {
   }
 
   onUpdate = () => {
-
   }
 }
 
-const style = {
-  paperStyle: {
-    margin: 20,
-    width: 500
-  },
-  formStyle: {
-    padding: 10
-  }
-};
-
-const TodoEditorWithMutation = graphql(addTodoMutation)(withRouter(TodoEditor));
-export default TodoEditorWithMutation;
+export default TodoEditor;

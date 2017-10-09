@@ -41,7 +41,7 @@ class TodoItem extends Component {
     };
 
     resolveAvatar = () => {
-        if(this.props.todo.userByOwnerid && !this.props.todo.avatar) {
+        if(this.props.todo.userByOwnerid) {
             const rand = Math.floor(Math.random() * 100) + 1;
             const genderFlag = Math.random() >= 0.5;
             const gender = genderFlag ? 'women' : 'men';

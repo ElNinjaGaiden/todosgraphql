@@ -1,14 +1,9 @@
 import React, { Component } from 'react';
-import { graphql } from 'react-apollo';
-import { List } from 'material-ui/List';
-import Subheader from 'material-ui/Subheader';
 import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar';
-import Divider from 'material-ui/Divider';
 import Paper from 'material-ui/Paper';
+import TodosList from '../components/TodosList';
 import TodoEditor from '../components/TodoEditor';
-import TodoItem from '../components/TodoItem';
-import { todosListQuery } from '../data/Todos';
-import { lightBlue600 } from 'material-ui/styles/colors';
+import SortingTodosMenu from '../components/SortingTodosMenu';
 
 const style = {
     grid: {
@@ -17,6 +12,10 @@ const style = {
     todosList: {
         margin: 20,
         width: 700
+    },
+    sortMenuTitle: {
+        marginTop: 5,
+        fontSize: 15
     }
 };
 
@@ -25,6 +24,8 @@ class TodosViewTemplate extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            sortCriteria: 'DUEDATE_ASC',
+            lastChangeDate: null,
             todo: {
                 priorityByPriorityid: {},
                 userByOwnerid: {}
@@ -36,28 +37,25 @@ class TodosViewTemplate extends Component {
         this.setState({ todo: todo });
     }
 
+    onSortChange = (sortCriteria) => {
+        this.setState({ sortCriteria: sortCriteria });
+    }
+
     render () {
-        const { data: {loading, error, allTodos }} = this.props;
-        if (loading) {
-            return <p>Loading ...</p>;
-        }
-        if (error) {
-            return <p>{error.message}</p>;
-        }
         return (
             <div style={style.grid}>
                 <div>
                     <Paper style={style.todosList}>
                         <Toolbar>
                             <ToolbarGroup>
-                                <ToolbarTitle text={allTodos.nodes.length ? 'Todos' : 'No todos available yet'} />
+                                <ToolbarTitle text={'Todos'} />
+                            </ToolbarGroup>
+                            <ToolbarGroup lastChild={true}>
+                                <ToolbarTitle text="Sort by" style={style.sortMenuTitle} />
+                                <SortingTodosMenu value={this.state.sortCriteria} onSortChange={this.onSortChange.bind(this)} />
                             </ToolbarGroup>
                         </Toolbar>
-                        <List className={'todos-list'}>
-                            {/* <Subheader style={{backgroundColor: lightBlue600, color: 'white'}}>{allTodos.nodes.length ? 'Todos' : 'No todos available yet'}</Subheader> */}
-                            <Divider />
-                            { allTodos.nodes.map(n => <TodoItem key={n.id} todo={n} onClick={this.onItemClick.bind(this)} />) }
-                        </List>
+                        <TodosList onItemClick={this.onItemClick.bind(this)} sortCriteria={this.state.sortCriteria} />
                     </Paper>
                 </div>
                 <div>
@@ -65,11 +63,11 @@ class TodosViewTemplate extends Component {
                                 description={this.state.todo.description}
                                 duedate={this.state.todo.duedate} 
                                 priorityId={this.state.todo.priorityByPriorityid.id}
-                                ownerId={this.state.todo.userByOwnerid ? this.state.todo.userByOwnerid.id : null} />
+                                ownerId={this.state.todo.userByOwnerid ? this.state.todo.userByOwnerid.id : null}
+                                sortCriteria={this.state.sortCriteria} />
                 </div>
             </div>);
     }
 }
 
-const TodosView = graphql(todosListQuery)(TodosViewTemplate);
-export default TodosView;
+export default TodosViewTemplate;

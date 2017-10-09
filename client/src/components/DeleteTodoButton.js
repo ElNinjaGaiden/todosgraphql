@@ -3,7 +3,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import { graphql } from 'react-apollo';
 import { todosListQuery, deleteTodoMutation } from '../data/Todos';
 
-const DeleteTodoButtonTemplate = ({mutate, onDelete, todoId}) => {
+const DeleteTodoButtonTemplate = ({mutate, onDelete, todoId, sortCriteria}) => {
 
     const onDeleteClick = () => {
         mutate({
@@ -12,7 +12,14 @@ const DeleteTodoButtonTemplate = ({mutate, onDelete, todoId}) => {
                 id: todoId
               }
             },
-            refetchQueries: [ { query: todosListQuery }]
+            refetchQueries: [
+                { 
+                  query: todosListQuery,
+                  variables: {
+                    sortCriteria: sortCriteria
+                  }
+                }
+              ]
           })
           .then(res => {
               if(typeof onDelete === 'function') {
