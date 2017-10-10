@@ -30,6 +30,7 @@ class TodosList extends Component {
 
 export default graphql(todosListQuery, {
     options: ({sortCriteria}) => ({
-      variables: { sortCriteria: sortCriteria }
+      variables: { sortCriteria: sortCriteria },
+      fetchPolicy: 'network-only'
     }),
 })(TodosList);

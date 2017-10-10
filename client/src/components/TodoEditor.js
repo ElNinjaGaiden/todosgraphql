@@ -44,7 +44,7 @@ class TodoEditor extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const newTodo = Object.assign(this.state.todo, nextProps);
+    const newTodo = Object.assign({}, this.state.todo, nextProps);
     if(newTodo.duedate && typeof newTodo.duedate === 'string') {
       const duedateparts = nextProps.duedate.split('-');
       newTodo.duedate = new Date(parseInt(duedateparts[0]), parseInt(duedateparts[1]) - 1, parseInt(duedateparts[2]));
@@ -76,7 +76,6 @@ class TodoEditor extends Component {
               this.state.todo.id && <DeleteTodoButton todoId={this.state.todo.id} onDelete={this.onDelete.bind(this)} sortCriteria={this.props.sortCriteria} />
             }
             {
-              //!this.state.todo.id && <RaisedButton className={'todo-editor-toolbar-button'} label="Add" primary={true} onClick={this.onSaveClick.bind(this)} />
               !this.state.todo.id && <AddTodoButton  onAdd={this.onAdd.bind(this)} todo={this.state.todo} sortCriteria={this.props.sortCriteria} />
             }
             {

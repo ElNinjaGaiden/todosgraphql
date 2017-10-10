@@ -44,3 +44,7 @@
 .app-bar-title span {
   font-size: 14px;
 }
+
+.todo-details-progress-bar-wrapper {
+  width: 100%;
+}

@@ -39,7 +39,9 @@ query TodosListQuery($sortCriteria:TodosOrderBy!) {
 export const deleteTodoMutation = gql`
 mutation DeleteTodo($input: DeleteTodoByIdInput!) {
     deleteTodoById(input: $input) {
-        clientMutationId
+        todo {
+            id
+        }
     }
 }
 `;
@@ -47,7 +49,6 @@ mutation DeleteTodo($input: DeleteTodoByIdInput!) {
 export const updateTodoMutation = gql`
 mutation UpdateTodoById($input: UpdateTodoByIdInput!) {
     updateTodoById(input: $input) {
-        clientMutationId
         todo {
             id
             title
@@ -84,7 +85,35 @@ mutation UpdateTodoById($input: UpdateTodoByIdInput!) {
 export const addTodoMutation = gql`
 mutation CreateTodo($todo: RegistertodoInput!) {
   registertodo(input: $todo) {
-    clientMutationId
+    todo {
+        id
+        title
+        description
+        statusid
+        todostatusByStatusid {
+            id
+            name
+        }
+        priorityid
+        priorityByPriorityid {
+            id
+            name
+        }
+        creatorid
+        userByCreatorid {
+            id
+            firstname
+            lastname
+        }
+        ownerid
+        userByOwnerid {
+            id
+            firstname
+            lastname
+        }
+        createdon
+        duedate
+    }
   }
 }
 `;

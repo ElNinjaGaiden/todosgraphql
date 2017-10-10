@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { ListItem } from 'material-ui/List';
 import Divider from 'material-ui/Divider';
 import Avatar from 'material-ui/Avatar';
+import LinearProgress from 'material-ui/LinearProgress';
 import { red500, yellow500, greenA700, grey400 } from 'material-ui/styles/colors';
 import noAvatar from '../NoAvatar.jpg';
 
@@ -22,6 +23,10 @@ const style = {
                 top: 35
             }
         }
+    },
+    progressBar: {
+        margin: 15,
+        width: 'calc(100% - 30px)'
     }
 };
 
@@ -93,6 +98,9 @@ class TodoItem extends Component {
                     </div>
                     } >
                 </ListItem>
+                {
+                    todo.id < 0 && <LinearProgress mode="indeterminate" style={style.progressBar} />
+                }
                 <Divider inset={true} />
             </div>
         )

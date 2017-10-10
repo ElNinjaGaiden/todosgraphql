@@ -8,10 +8,22 @@ import NotFound from './views/NotFound';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import AppBarComponent from './components/AppBar';
 
+const networkInterface = createNetworkInterface({ 
+  uri: graphUri
+});
+
+networkInterface.use([{
+  applyMiddleware(req, next) {
+    setTimeout(next, 1000);
+  },
+}]);
+
 const client = new ApolloClient({
-  networkInterface: createNetworkInterface({ 
-    uri: graphUri
-  })
+  networkInterface: networkInterface//,
+  // dataIdFromObject: (o) => {
+  //   console.log(o.__typename);
+  //   return `${o.__typename}:${o.id}`;
+  // }
 });
 
 class App extends Component {
