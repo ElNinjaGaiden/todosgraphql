@@ -34,7 +34,9 @@ class PrioritiesSelectFieldTemplate extends Component {
         if (error) {
             return <p>{error.message}</p>;
         }
-        return  <SelectField value={this.state.priorityId} floatingLabelText="Priority" hintText="Priority" onChange={this.handleChange.bind(this)} >
+        return  <SelectField value={this.state.priorityId} errorText={this.props.errorText}
+                            floatingLabelText="Priority" hintText="Priority" 
+                            onChange={this.handleChange.bind(this)} >
                     { allPriorities.nodes.map(p => <MenuItem key={p.id} value={p.id} primaryText={p.name} />) }
                 </SelectField>;
     }

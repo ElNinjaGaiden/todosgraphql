@@ -3,7 +3,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import { graphql } from 'react-apollo';
 import { todosListQuery, updateTodoMutation } from '../data/Todos';
 
-const UpdateTodoButtonTemplate = ({mutate, onUpdate, todo, sortCriteria}) => {
+const UpdateTodoButtonTemplate = ({mutate, onUpdate, todo, sortCriteria, disabled}) => {
 
     const onUpdateClick = () => {
 
@@ -19,7 +19,7 @@ const UpdateTodoButtonTemplate = ({mutate, onUpdate, todo, sortCriteria}) => {
                     priorityid: todo.priorityId,
                     ownerid: todo.ownerId,
                     creatorid: todo.creatorId,
-                    duedate: `${todo.duedate.getFullYear()}-${todo.duedate.getMonth() + 1}-${todo.duedate.getDate()}`
+                    duedate: `${todo.dueDate.getFullYear()}-${todo.dueDate.getMonth() + 1}-${todo.dueDate.getDate()}`
                   }
               }
             },
@@ -36,7 +36,7 @@ const UpdateTodoButtonTemplate = ({mutate, onUpdate, todo, sortCriteria}) => {
                     statusid: todo.statusId,
                     creatorid: todo.creatorId,
                     createdon: new Date().toISOString(),
-                    duedate: `${todo.duedate.getFullYear()}-${todo.duedate.getMonth() + 1}-${todo.duedate.getDate()}`,
+                    duedate: `${todo.dueDate.getFullYear()}-${todo.dueDate.getMonth() + 1}-${todo.dueDate.getDate()}`,
                     todostatusByStatusid: {
                       __typename: 'Todostatus',
                       id: todo.statusId,
@@ -65,7 +65,6 @@ const UpdateTodoButtonTemplate = ({mutate, onUpdate, todo, sortCriteria}) => {
             },
             update: (store, { data: { updateTodoById } }) => {
               // Read the data from the cache for this query.
-              //console.log(updateTodoById.todo);
               const data = store.readQuery({query: todosListQuery, variables: { sortCriteria: sortCriteria } });
               let currentTodo = data.allTodos.nodes.find((n) => n.id === updateTodoById.todo.id);
               if (currentTodo) {
@@ -99,7 +98,7 @@ const UpdateTodoButtonTemplate = ({mutate, onUpdate, todo, sortCriteria}) => {
     }
 
     return <RaisedButton className={'todo-editor-toolbar-button'} 
-            label="Update" primary={true} 
+            label="Update" primary={true} disabled={disabled}
             onClick={onUpdateClick} />
 }
 

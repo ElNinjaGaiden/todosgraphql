@@ -3,8 +3,8 @@ import RaisedButton from 'material-ui/RaisedButton';
 import { graphql } from 'react-apollo';
 import { todosListQuery, addTodoMutation } from '../data/Todos';
 
-const AddTodoButtonTemplate = ({mutate, onAdd, todo, sortCriteria}) => {
-  
+const AddTodoButtonTemplate = ({mutate, onAdd, todo, sortCriteria, disabled}) => {
+
     const onAddClick = () => {
         mutate({
             variables: {
@@ -15,7 +15,7 @@ const AddTodoButtonTemplate = ({mutate, onAdd, todo, sortCriteria}) => {
                   priorityid: todo.priorityId,
                   statusid: todo.statusId,
                   creatorid: todo.creatorId,
-                  duedate: `${todo.duedate.getFullYear()}-${todo.duedate.getMonth() + 1}-${todo.duedate.getDate()}`
+                  duedate: `${todo.dueDate.getFullYear()}-${todo.dueDate.getMonth() + 1}-${todo.dueDate.getDate()}`
                 }
               },
               optimisticResponse: {
@@ -31,7 +31,7 @@ const AddTodoButtonTemplate = ({mutate, onAdd, todo, sortCriteria}) => {
                     statusid: todo.statusId,
                     creatorid: todo.creatorId,
                     createdon: new Date().toISOString(),
-                    duedate: `${todo.duedate.getFullYear()}-${todo.duedate.getMonth() + 1}-${todo.duedate.getDate()}`,
+                    duedate: `${todo.dueDate.getFullYear()}-${todo.dueDate.getMonth() + 1}-${todo.dueDate.getDate()}`,
                     todostatusByStatusid: {
                       __typename: 'Todostatus',
                       id: todo.statusId,
@@ -86,7 +86,7 @@ const AddTodoButtonTemplate = ({mutate, onAdd, todo, sortCriteria}) => {
     }
 
     return <RaisedButton className={'todo-editor-toolbar-button'} 
-            label="Add" primary={true} 
+            label="Add" primary={true} disabled={disabled}
             onClick={onAddClick} />
 }
 

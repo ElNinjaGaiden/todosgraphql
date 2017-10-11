@@ -12,18 +12,8 @@ const networkInterface = createNetworkInterface({
   uri: graphUri
 });
 
-networkInterface.use([{
-  applyMiddleware(req, next) {
-    setTimeout(next, 1000);
-  },
-}]);
-
 const client = new ApolloClient({
-  networkInterface: networkInterface//,
-  // dataIdFromObject: (o) => {
-  //   console.log(o.__typename);
-  //   return `${o.__typename}:${o.id}`;
-  // }
+  networkInterface: networkInterface
 });
 
 class App extends Component {

@@ -24,9 +24,8 @@ class TodoEditor extends Component {
 
   constructor (props) {
     super(props);
-    this.state = {
-      todo: this.getEmptyTodo()
-    };
+    this.state = this.getEmptyTodo();
+    this.state = Object.assign(this.state, this.validateData())
   }
 
   getEmptyTodo = () => {
@@ -39,77 +38,131 @@ class TodoEditor extends Component {
       priorityId: null,
       statusId: 1,
       ownerId: null,
-      duedate: null
+      dueDate: null,
+      isValid: false
     };
   }
 
   componentWillReceiveProps(nextProps) {
-    const newTodo = Object.assign({}, this.state.todo, nextProps);
+    const newTodo = Object.assign({}, this.state, nextProps);
     if(newTodo.duedate && typeof newTodo.duedate === 'string') {
       const duedateparts = nextProps.duedate.split('-');
-      newTodo.duedate = new Date(parseInt(duedateparts[0]), parseInt(duedateparts[1]) - 1, parseInt(duedateparts[2]));
+      newTodo.dueDate = new Date(parseInt(duedateparts[0], 10), parseInt(duedateparts[1], 10) - 1, parseInt(duedateparts[2], 10));
     }
-    this.setState({todo: newTodo});
+    this.setState(newTodo, () => {
+      this.setState(Object.assign(this.state, this.validateData()));
+    });
   }
 
   render () {
     return (
       <Paper style={style.paperStyle} zDepth={2}>
-        <Toolbar>
-          <ToolbarGroup>
-          <ToolbarTitle text="Todo Details" />
-          </ToolbarGroup>
-        </Toolbar>
-        <form style={style.formStyle}>
-          <TextField hintText="Title" floatingLabelText="Title" fullWidth={true} value={this.state.todo.title} onChange={this.handleTitle.bind(this)} />
-          <TextField hintText="Description" floatingLabelText="Description" multiLine={true} rows={2} fullWidth={true} value={this.state.todo.description} onChange={this.handleDescription.bind(this)}/>
-          <br />
-          <DatePicker hintText="Due Date" floatingLabelText="Due Date" value={this.state.todo.duedate} onChange={this.handleDueDate.bind(this)} autoOk={true} />
-          <PrioritiesSelectField value={this.state.todo.priorityId} onChange={this.handlePriority.bind(this)} />
-          <UsersSelectField value={this.state.todo.ownerId} onChange={this.handleOwner.bind(this)} />
+        <form >
+          <Toolbar>
+            <ToolbarGroup>
+            <ToolbarTitle text="Todo Details" />
+            </ToolbarGroup>
+          </Toolbar>
+            <div style={style.formStyle}>
+              <TextField errorText={this.state.titleError} required={true} 
+                          name={"title"} hintText="Title" floatingLabelText="Title" 
+                          fullWidth={true} value={this.state.title} 
+                          onChange={this.handleInput.bind(this)} />
+              <TextField errorText={this.state.descriptionError} 
+                          hintText="Description" name={"description"} 
+                          floatingLabelText="Description" multiLine={true} 
+                          rows={2} fullWidth={true} value={this.state.description} 
+                          onChange={this.handleInput.bind(this)}/>
+              <br />
+              <DatePicker required={true} hintText="Due Date" 
+                          errorText={this.state.dueDateError}
+                          name={"dueDate"} floatingLabelText="Due Date" 
+                          value={this.state.dueDate} 
+                          onChange={this.handleDueDate.bind(this)} autoOk={true} />
+              <PrioritiesSelectField errorText={this.state.priorityError}
+                                      name={"priorityId"} required={true} 
+                                      value={this.state.priorityId} 
+                                      onChange={this.handlePriority.bind(this)} />
+              <UsersSelectField name={"ownerId"} required={true} 
+                                value={this.state.ownerId} 
+                                onChange={this.handleOwner.bind(this)} />
+            </div>
+          <Toolbar>
+            <ToolbarGroup firstChild={true} />
+            <ToolbarGroup lastChild={true}>
+              <RaisedButton className={'todo-editor-toolbar-button'} label="Clear" 
+                            primary={true} onClick={this.onClearClick.bind(this)} />
+              {
+                this.state.id && <DeleteTodoButton todoId={this.state.id} 
+                                                    onDelete={this.onDelete.bind(this)} 
+                                                    sortCriteria={this.props.sortCriteria} />
+              }
+              {
+                !this.state.id && <AddTodoButton onAdd={this.onAdd.bind(this)} 
+                                                  todo={this.state} disabled={!this.state.isValid}
+                                                  sortCriteria={this.props.sortCriteria} />
+              }
+              {
+                this.state.id && <UpdateTodoButton  onUpdate={this.onUpdate.bind(this)} 
+                                                    todo={this.state} disabled={!this.state.isValid}
+                                                    sortCriteria={this.props.sortCriteria} />
+              }
+            </ToolbarGroup>
+          </Toolbar>
         </form>
-        <Toolbar>
-          <ToolbarGroup firstChild={true} />
-          <ToolbarGroup lastChild={true}>
-            <RaisedButton className={'todo-editor-toolbar-button'} label="Clear" primary={true} onClick={this.onClearClick.bind(this)} />
-            {
-              this.state.todo.id && <DeleteTodoButton todoId={this.state.todo.id} onDelete={this.onDelete.bind(this)} sortCriteria={this.props.sortCriteria} />
-            }
-            {
-              !this.state.todo.id && <AddTodoButton  onAdd={this.onAdd.bind(this)} todo={this.state.todo} sortCriteria={this.props.sortCriteria} />
-            }
-            {
-              this.state.todo.id && <UpdateTodoButton onUpdate={this.onUpdate.bind(this)} todo={this.state.todo} sortCriteria={this.props.sortCriteria} />
-            }
-          </ToolbarGroup>
-        </Toolbar>
       </Paper>
     )
   }
 
-  handleTitle(event) {
-    const newTodo = Object.assign(this.state.todo, { title: event.target.value });
-    this.setState({ todo: newTodo });
+  handleInput (e) {
+    const name = e.target.name;
+    const value = e.target.value;
+    this.setState({[name]: value}, () => {
+      this.setState(Object.assign(this.state, this.validateData()));
+    });
   }
 
-  handleDescription(event) {
-    const newTodo = Object.assign(this.state.todo, { description: event.target.value });
-    this.setState({ todo: newTodo });
+  validateData = () => {
+    let validationData = {
+      titleError: !this.state.title && 'Required',
+      descriptionError: !this.state.description && 'Required',
+      dueDateError: !this.state.dueDate && 'Required',
+      priorityError: !this.state.priorityId && 'Required'
+    };
+
+    return Object.assign(validationData, {
+      isValid: !validationData.titleError && 
+                !validationData.descriptionError && 
+                !validationData.dueDateError && 
+                !validationData.priorityError
+    });
   }
 
   handlePriority(event, index, value) {
-    const newTodo = Object.assign(this.state.todo, { priorityId: value });
-    this.setState({ todo: newTodo });
+    this.handleInput({
+      target: {
+        name: 'priorityId',
+        value: value
+      }
+    });
   }
 
   handleOwner(event, index, value) {
-    const newTodo = Object.assign(this.state.todo, { ownerId: value });
-    this.setState({ todo: newTodo });
+    this.handleInput({
+      target: {
+        name: 'ownerId',
+        value: value
+      }
+    });
   }
 
   handleDueDate = (event, date) => {
-    const newTodo = Object.assign(this.state.todo, { duedate: date });
-    this.setState({ todo: newTodo });
+    this.handleInput({
+      target: {
+        name: 'dueDate',
+        value: date
+      }
+    });
   }
 
   onAdd = () => {
@@ -117,7 +170,9 @@ class TodoEditor extends Component {
   }
 
   onClearClick = () => {
-    this.setState({todo: this.getEmptyTodo()});
+    this.setState(this.getEmptyTodo(), () => {
+      this.setState(Object.assign(this.state, this.validateData()));
+    });
   }
 
   onDelete = () => {
