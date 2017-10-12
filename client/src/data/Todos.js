@@ -7,23 +7,19 @@ query TodosListQuery($sortCriteria:TodosOrderBy!) {
             id
             title
             description
-            statusid
             todostatusByStatusid {
                 id
                 name
             }
-            priorityid
             priorityByPriorityid {
                 id
                 name
             }
-            creatorid
             userByCreatorid {
                 id
                 firstname
                 lastname
             }
-            ownerid
             userByOwnerid {
                 id
                 firstname
@@ -53,23 +49,19 @@ mutation UpdateTodoById($input: UpdateTodoByIdInput!) {
             id
             title
             description
-            statusid
             todostatusByStatusid {
                 id
                 name
             }
-            priorityid
             priorityByPriorityid {
                 id
                 name
             }
-            creatorid
             userByCreatorid {
                 id
                 firstname
                 lastname
             }
-            ownerid
             userByOwnerid {
                 id
                 firstname
@@ -89,23 +81,19 @@ mutation CreateTodo($todo: RegistertodoInput!) {
         id
         title
         description
-        statusid
         todostatusByStatusid {
             id
             name
         }
-        priorityid
         priorityByPriorityid {
             id
             name
         }
-        creatorid
         userByCreatorid {
             id
             firstname
             lastname
         }
-        ownerid
         userByOwnerid {
             id
             firstname
@@ -117,3 +105,18 @@ mutation CreateTodo($todo: RegistertodoInput!) {
   }
 }
 `;
+
+export const getEmptyTodo = () => {
+    return {
+      id: null,
+      createdOn: null,
+      title: '',
+      description: '',
+      dueDate: null,
+      //Child nodes
+      userByCreatorid: null,
+      todostatusByStatusid: { id: 1, name: 'Registered' },
+      priorityByPriorityid: null,
+      userByOwnerid: null
+    };
+  }

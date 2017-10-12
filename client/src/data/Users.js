@@ -11,3 +11,13 @@ query UsersListQuery {
     }
 }
 `;
+
+export const userByIdQuery = gql`
+query UserById($id:Int!) {
+    userById(id:$id) {
+        id
+        firstname
+        lastname
+    }
+}
+`;

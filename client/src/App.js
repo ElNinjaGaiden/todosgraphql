@@ -12,6 +12,12 @@ const networkInterface = createNetworkInterface({
   uri: graphUri
 });
 
+// networkInterface.use([{
+//   applyMiddleware(req, next) {
+//     setTimeout(next, 1000);
+//   },
+// }]);
+
 const client = new ApolloClient({
   networkInterface: networkInterface
 });

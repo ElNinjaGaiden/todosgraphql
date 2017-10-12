@@ -18,7 +18,9 @@ class UsersSelectFieldTemplate extends Component {
             userId: value
         });
         if(typeof this.props.onChange === 'function') {
-            this.props.onChange(event, index, value);
+            const { nodes } = this.props.data.allUsers;
+            const node = nodes.find(p => p.id === value);
+            this.props.onChange(node);
         }
     }
 
@@ -34,7 +36,9 @@ class UsersSelectFieldTemplate extends Component {
         if (error) {
             return <p>{error.message}</p>;
         }
-        return  <SelectField value={this.state.userId} floatingLabelText="Owner" hintText="Owner" onChange={this.handleChange.bind(this)}>
+        return  <SelectField disabled={this.props.disabled} value={this.state.userId} name={this.props.name} 
+                            floatingLabelText={this.props.floatingLabelText} hintText={this.props.hintText} 
+                            onChange={this.handleChange.bind(this)}>
                     { allUsers.nodes.map(u => <MenuItem key={u.id} value={u.id} primaryText={u.firstname + ' ' + u.lastname} />) }
                 </SelectField>;
     }

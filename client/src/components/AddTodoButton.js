@@ -3,18 +3,18 @@ import RaisedButton from 'material-ui/RaisedButton';
 import { graphql } from 'react-apollo';
 import { todosListQuery, addTodoMutation } from '../data/Todos';
 
-const AddTodoButtonTemplate = ({mutate, onAdd, todo, sortCriteria, disabled}) => {
+const AddTodoButtonTemplate = ({mutate, onAdd, todo, user, sortCriteria, disabled}) => {
 
     const onAddClick = () => {
         mutate({
             variables: {
                 todo: {
-                  ownerid: todo.ownerId,
                   title: todo.title,
                   description: todo.description,
-                  priorityid: todo.priorityId,
-                  statusid: todo.statusId,
-                  creatorid: todo.creatorId,
+                  statusid: todo.todostatusByStatusid.id,
+                  priorityid: todo.priorityByPriorityid.id,
+                  ownerid: todo.userByOwnerid ? todo.userByOwnerid.id : null,
+                  creatorid: user.id,
                   duedate: `${todo.dueDate.getFullYear()}-${todo.dueDate.getMonth() + 1}-${todo.dueDate.getDate()}`
                 }
               },
@@ -27,32 +27,29 @@ const AddTodoButtonTemplate = ({mutate, onAdd, todo, sortCriteria, disabled}) =>
                     ownerid: todo.ownerId,
                     title: todo.title,
                     description: todo.description,
-                    priorityid: todo.priorityId,
-                    statusid: todo.statusId,
-                    creatorid: todo.creatorId,
                     createdon: new Date().toISOString(),
                     duedate: `${todo.dueDate.getFullYear()}-${todo.dueDate.getMonth() + 1}-${todo.dueDate.getDate()}`,
                     todostatusByStatusid: {
                       __typename: 'Todostatus',
-                      id: todo.statusId,
-                      name: ''
+                      id: todo.todostatusByStatusid.id,
+                      name: todo.todostatusByStatusid.name
                     },
                     priorityByPriorityid: {
                       __typename: 'Priority',
-                      id: todo.priorityId,
-                      name: ''
+                      id: todo.priorityByPriorityid.id,
+                      name: todo.priorityByPriorityid.name
                     },
                     userByCreatorid: {
                       __typename: 'User',
-                      id: todo.creatorId,
-                      firstname: '',
-                      lastname: ''
+                      id: user.id,
+                      firstname: user.firstname,
+                      lastname: user.lastname
                     },
-                    userByOwnerid: todo.ownerId && {
+                    userByOwnerid: {
                       __typename: 'User',
-                      id: todo.ownerId,
-                      firstname: '',
-                      lastname: ''
+                      id: todo.userByOwnerid && todo.userByOwnerid.id,
+                      firstname: todo.userByOwnerid && todo.userByOwnerid.firstname,
+                      lastname: todo.userByOwnerid && todo.userByOwnerid.lastname
                     }
                   }
                 },

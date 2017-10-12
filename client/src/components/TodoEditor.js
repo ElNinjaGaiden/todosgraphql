@@ -4,11 +4,15 @@ import TextField from 'material-ui/TextField';
 import DatePicker from 'material-ui/DatePicker';
 import PrioritiesSelectField from '../components/PrioritiesSelectField';
 import UsersSelectField from '../components/UsersSelectField';
+import TodoStatusSelectField from '../components/TodoStatusSelectField';
 import RaisedButton from 'material-ui/RaisedButton';
 import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar';
 import AddTodoButton from '../components/AddTodoButton';
 import DeleteTodoButton from '../components/DeleteTodoButton';
 import UpdateTodoButton from '../components/UpdateTodoButton';
+import { userByIdQuery } from '../data/Users';
+import { graphql } from 'react-apollo';
+import { getEmptyTodo } from '../data/Todos';
 
 const style = {
   paperStyle: {
@@ -24,37 +28,30 @@ class TodoEditor extends Component {
 
   constructor (props) {
     super(props);
-    this.state = this.getEmptyTodo();
-    this.state = Object.assign(this.state, this.validateData())
-  }
-
-  getEmptyTodo = () => {
-    return {
-      id: null,
-      creatorId: 1,
-      createdOn: null,
-      title: '',
-      description: '',
-      priorityId: null,
-      statusId: 1,
-      ownerId: null,
-      dueDate: null,
-      isValid: false
-    };
+    this.state = getEmptyTodo();
+    this.state = Object.assign(this.state, this.validateData());
   }
 
   componentWillReceiveProps(nextProps) {
-    const newTodo = Object.assign({}, this.state, nextProps);
-    if(newTodo.duedate && typeof newTodo.duedate === 'string') {
+    const newTodo = Object.assign(this.state, nextProps);
+    if(typeof newTodo.duedate === 'string') {
       const duedateparts = nextProps.duedate.split('-');
       newTodo.dueDate = new Date(parseInt(duedateparts[0], 10), parseInt(duedateparts[1], 10) - 1, parseInt(duedateparts[2], 10));
     }
+    //console.log('Ojo', nextProps, newTodo);
     this.setState(newTodo, () => {
-      this.setState(Object.assign(this.state, this.validateData()));
+      this.setState(Object.assign({}, this.state, this.validateData()));
     });
   }
 
   render () {
+    const { data: {loading, error, userById } } = this.props;
+    if (loading) {
+        return <p>Loading ...</p>;
+    }
+    if (error) {
+        return <p>{error.message}</p>;
+    }
     return (
       <Paper style={style.paperStyle} zDepth={2}>
         <form >
@@ -64,28 +61,39 @@ class TodoEditor extends Component {
             </ToolbarGroup>
           </Toolbar>
             <div style={style.formStyle}>
-              <TextField errorText={this.state.titleError} required={true} 
-                          name={"title"} hintText="Title" floatingLabelText="Title" 
+
+              <TextField errorText={this.state.titleError}
+                          name={"title"} hintText={"Title"} floatingLabelText={"Title"} 
                           fullWidth={true} value={this.state.title} 
                           onChange={this.handleInput.bind(this)} />
+
               <TextField errorText={this.state.descriptionError} 
-                          hintText="Description" name={"description"} 
-                          floatingLabelText="Description" multiLine={true} 
+                          hintText={"Description"} name={"description"} 
+                          floatingLabelText={"Description"} multiLine={true} 
                           rows={2} fullWidth={true} value={this.state.description} 
                           onChange={this.handleInput.bind(this)}/>
               <br />
-              <DatePicker required={true} hintText="Due Date" 
+
+              <DatePicker required={true} hintText={"Due Date"} 
                           errorText={this.state.dueDateError}
-                          name={"dueDate"} floatingLabelText="Due Date" 
+                          name={"dueDate"} floatingLabelText={"Due Date"} 
                           value={this.state.dueDate} 
                           onChange={this.handleDueDate.bind(this)} autoOk={true} />
+
               <PrioritiesSelectField errorText={this.state.priorityError}
                                       name={"priorityId"} required={true} 
-                                      value={this.state.priorityId} 
+                                      value={this.state.priorityByPriorityid ? this.state.priorityByPriorityid.id : null} 
                                       onChange={this.handlePriority.bind(this)} />
-              <UsersSelectField name={"ownerId"} required={true} 
-                                value={this.state.ownerId} 
+
+              <UsersSelectField name={"ownerId"} required={true} floatingLabelText={"Owner"} hintText={"Owner"}
+                                value={this.state.userByOwnerid ? this.state.userByOwnerid.id : null} 
                                 onChange={this.handleOwner.bind(this)} />
+              {
+                this.state.id && <TodoStatusSelectField required={true} name={"statusId"} 
+                                                        onChange={this.handleStatus.bind(this)}
+                                                        statusError={this.state.statusError}
+                                                        value={this.state.todostatusByStatusid.id} />
+              }
             </div>
           <Toolbar>
             <ToolbarGroup firstChild={true} />
@@ -98,8 +106,9 @@ class TodoEditor extends Component {
                                                     sortCriteria={this.props.sortCriteria} />
               }
               {
-                !this.state.id && <AddTodoButton onAdd={this.onAdd.bind(this)} 
-                                                  todo={this.state} disabled={!this.state.isValid}
+                !this.state.id && userById && <AddTodoButton onAdd={this.onAdd.bind(this)} 
+                                                  todo={this.state} user={userById} 
+                                                  disabled={!this.state.isValid}
                                                   sortCriteria={this.props.sortCriteria} />
               }
               {
@@ -118,7 +127,7 @@ class TodoEditor extends Component {
     const name = e.target.name;
     const value = e.target.value;
     this.setState({[name]: value}, () => {
-      this.setState(Object.assign(this.state, this.validateData()));
+      this.setState(Object.assign({}, this.state, this.validateData()));
     });
   }
 
@@ -127,31 +136,45 @@ class TodoEditor extends Component {
       titleError: !this.state.title && 'Required',
       descriptionError: !this.state.description && 'Required',
       dueDateError: !this.state.dueDate && 'Required',
-      priorityError: !this.state.priorityId && 'Required'
+      priorityError: !this.state.priorityByPriorityid && 'Required',
+      statusError: !this.state.todostatusByStatusid && 'Required'
     };
 
     return Object.assign(validationData, {
       isValid: !validationData.titleError && 
                 !validationData.descriptionError && 
                 !validationData.dueDateError && 
-                !validationData.priorityError
+                !validationData.priorityError &&
+                !validationData.statusError
     });
   }
 
-  handlePriority(event, index, value) {
+  handlePriority(priority) {
+    this.setState({priorityByPriorityid: priority});
     this.handleInput({
       target: {
-        name: 'priorityId',
-        value: value
+        name: 'priorityByPriorityid',
+        value: priority
       }
     });
   }
 
-  handleOwner(event, index, value) {
+  handleOwner(owner) {
+    this.setState({userByOwnerid: owner});
     this.handleInput({
       target: {
-        name: 'ownerId',
-        value: value
+        name: 'userByOwnerid',
+        value: owner
+      }
+    });
+  }
+
+  handleStatus(status) {
+    this.setState({todostatusByStatusid: status});
+    this.handleInput({
+      target: {
+        name: 'todostatusByStatusid',
+        value: status
       }
     });
   }
@@ -170,7 +193,7 @@ class TodoEditor extends Component {
   }
 
   onClearClick = () => {
-    this.setState(this.getEmptyTodo(), () => {
+    this.setState(getEmptyTodo(), () => {
       this.setState(Object.assign(this.state, this.validateData()));
     });
   }
@@ -183,4 +206,8 @@ class TodoEditor extends Component {
   }
 }
 
-export default TodoEditor;
+export default graphql(userByIdQuery, {
+  options: ({userId}) => ({
+    variables: { id: userId }
+  }),
+})(TodoEditor);

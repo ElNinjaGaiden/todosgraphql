@@ -18,7 +18,9 @@ class PrioritiesSelectFieldTemplate extends Component {
             priorityId: value
         });
         if(typeof this.props.onChange === 'function') {
-            this.props.onChange(event, index, value);
+            const { nodes } = this.props.data.allPriorities;
+            const node = nodes.find(p => p.id === value);
+            this.props.onChange(node);
         }
     }
 

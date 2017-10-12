@@ -4,6 +4,7 @@ import Paper from 'material-ui/Paper';
 import TodosList from '../components/TodosList';
 import TodoEditor from '../components/TodoEditor';
 import SortingTodosMenu from '../components/SortingTodosMenu';
+import { getEmptyTodo } from '../data/Todos';
 
 const style = {
     grid: {
@@ -26,10 +27,7 @@ class TodosViewTemplate extends Component {
         this.state = {
             sortCriteria: 'DUEDATE_ASC',
             lastChangeDate: null,
-            todo: {
-                priorityByPriorityid: {},
-                userByOwnerid: {}
-            }
+            todo: getEmptyTodo()
         };
     }
 
@@ -59,12 +57,17 @@ class TodosViewTemplate extends Component {
                     </Paper>
                 </div>
                 <div>
-                    <TodoEditor id={this.state.todo.id} title={this.state.todo.title} 
+                    <TodoEditor id={this.state.todo.id}
+                                title={this.state.todo.title} 
                                 description={this.state.todo.description}
                                 duedate={this.state.todo.duedate} 
-                                priorityId={this.state.todo.priorityByPriorityid.id}
-                                ownerId={this.state.todo.userByOwnerid ? this.state.todo.userByOwnerid.id : null}
-                                sortCriteria={this.state.sortCriteria} />
+                                priorityByPriorityid={this.state.todo.priorityByPriorityid}
+                                userByOwnerid={this.state.todo.userByOwnerid}
+                                userByCreatorid={this.state.todo.userByCreatorid}
+                                todostatusByStatusid={this.state.todo.todostatusByStatusid}
+                                sortCriteria={this.state.sortCriteria}
+                                userId={1} 
+                                />
                 </div>
             </div>);
     }
