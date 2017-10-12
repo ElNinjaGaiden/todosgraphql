@@ -24,9 +24,8 @@ const style = {
             }
         }
     },
-    progressBar: {
-        margin: 15,
-        width: 'calc(100% - 30px)'
+    progressBarWrapper: {
+        padding: 15
     }
 };
 
@@ -99,7 +98,10 @@ class TodoItem extends Component {
                     } >
                 </ListItem>
                 {
-                    todo.id < 0 && <LinearProgress mode="indeterminate" style={style.progressBar} />
+                    todo.id < 0 && 
+                    <div style={style.progressBarWrapper}>
+                        <LinearProgress mode="indeterminate" />
+                    </div>
                 }
                 <Divider inset={true} />
             </div>

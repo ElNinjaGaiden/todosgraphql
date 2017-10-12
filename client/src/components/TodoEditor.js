@@ -13,6 +13,7 @@ import UpdateTodoButton from '../components/UpdateTodoButton';
 import { userByIdQuery } from '../data/Users';
 import { graphql } from 'react-apollo';
 import { getEmptyTodo } from '../data/Todos';
+import LinearProgress from 'material-ui/LinearProgress';
 
 const style = {
   paperStyle: {
@@ -21,6 +22,9 @@ const style = {
   },
   formStyle: {
     padding: 10
+  },
+  progressWrapper: {
+    padding: '30px 15px'
   }
 };
 
@@ -45,80 +49,88 @@ class TodoEditor extends Component {
   }
 
   render () {
-    const { data: {loading, error, userById } } = this.props;
+    const { data: { loading, error, userById } } = this.props;
     if (loading) {
-        return <p>Loading ...</p>;
+        return (
+          <Paper style={style.paperStyle} zDepth={2}>
+            <Toolbar>
+              <ToolbarGroup>
+              <ToolbarTitle text="Todo Details" />
+              </ToolbarGroup>
+            </Toolbar>
+            <div style={style.progressWrapper}>
+              <LinearProgress style={style.progress} mode={"indeterminate"} />
+            </div>
+          </Paper>
+        )
     }
     if (error) {
         return <p>{error.message}</p>;
     }
     return (
       <Paper style={style.paperStyle} zDepth={2}>
-        <form >
-          <Toolbar>
-            <ToolbarGroup>
-            <ToolbarTitle text="Todo Details" />
-            </ToolbarGroup>
-          </Toolbar>
-            <div style={style.formStyle}>
+        <Toolbar>
+          <ToolbarGroup>
+          <ToolbarTitle text="Todo Details" />
+          </ToolbarGroup>
+        </Toolbar>
+          <div style={style.formStyle}>
+            <TextField errorText={this.state.titleError}
+                        name={"title"} hintText={"Title"} floatingLabelText={"Title"} 
+                        fullWidth={true} value={this.state.title} 
+                        onChange={this.handleInput.bind(this)} />
 
-              <TextField errorText={this.state.titleError}
-                          name={"title"} hintText={"Title"} floatingLabelText={"Title"} 
-                          fullWidth={true} value={this.state.title} 
-                          onChange={this.handleInput.bind(this)} />
+            <TextField errorText={this.state.descriptionError} 
+                        hintText={"Description"} name={"description"} 
+                        floatingLabelText={"Description"} multiLine={true} 
+                        rows={2} fullWidth={true} value={this.state.description} 
+                        onChange={this.handleInput.bind(this)}/>
+            <br />
 
-              <TextField errorText={this.state.descriptionError} 
-                          hintText={"Description"} name={"description"} 
-                          floatingLabelText={"Description"} multiLine={true} 
-                          rows={2} fullWidth={true} value={this.state.description} 
-                          onChange={this.handleInput.bind(this)}/>
-              <br />
+            <DatePicker required={true} hintText={"Due Date"} 
+                        errorText={this.state.dueDateError}
+                        name={"dueDate"} floatingLabelText={"Due Date"} 
+                        value={this.state.dueDate} 
+                        onChange={this.handleDueDate.bind(this)} autoOk={true} />
 
-              <DatePicker required={true} hintText={"Due Date"} 
-                          errorText={this.state.dueDateError}
-                          name={"dueDate"} floatingLabelText={"Due Date"} 
-                          value={this.state.dueDate} 
-                          onChange={this.handleDueDate.bind(this)} autoOk={true} />
+            <PrioritiesSelectField errorText={this.state.priorityError}
+                                    name={"priorityId"} required={true} 
+                                    value={this.state.priorityByPriorityid ? this.state.priorityByPriorityid.id : null} 
+                                    onChange={this.handlePriority.bind(this)} />
 
-              <PrioritiesSelectField errorText={this.state.priorityError}
-                                      name={"priorityId"} required={true} 
-                                      value={this.state.priorityByPriorityid ? this.state.priorityByPriorityid.id : null} 
-                                      onChange={this.handlePriority.bind(this)} />
-
-              <UsersSelectField name={"ownerId"} required={true} floatingLabelText={"Owner"} hintText={"Owner"}
-                                value={this.state.userByOwnerid ? this.state.userByOwnerid.id : null} 
-                                onChange={this.handleOwner.bind(this)} />
-              {
-                this.state.id && <TodoStatusSelectField required={true} name={"statusId"} 
-                                                        onChange={this.handleStatus.bind(this)}
-                                                        statusError={this.state.statusError}
-                                                        value={this.state.todostatusByStatusid.id} />
-              }
-            </div>
-          <Toolbar>
-            <ToolbarGroup firstChild={true} />
-            <ToolbarGroup lastChild={true}>
-              <RaisedButton className={'todo-editor-toolbar-button'} label="Clear" 
-                            primary={true} onClick={this.onClearClick.bind(this)} />
-              {
-                this.state.id && <DeleteTodoButton todoId={this.state.id} 
-                                                    onDelete={this.onDelete.bind(this)} 
-                                                    sortCriteria={this.props.sortCriteria} />
-              }
-              {
-                !this.state.id && userById && <AddTodoButton onAdd={this.onAdd.bind(this)} 
-                                                  todo={this.state} user={userById} 
-                                                  disabled={!this.state.isValid}
+            <UsersSelectField name={"ownerId"} required={true} floatingLabelText={"Owner"} hintText={"Owner"}
+                              value={this.state.userByOwnerid ? this.state.userByOwnerid.id : null} 
+                              onChange={this.handleOwner.bind(this)} />
+            {
+              this.state.id && <TodoStatusSelectField required={true} name={"statusId"} 
+                                                      onChange={this.handleStatus.bind(this)}
+                                                      statusError={this.state.statusError}
+                                                      value={this.state.todostatusByStatusid.id} />
+            }
+          </div>
+        <Toolbar>
+          <ToolbarGroup firstChild={true} />
+          <ToolbarGroup lastChild={true}>
+            <RaisedButton className={'todo-editor-toolbar-button'} label="Clear" 
+                          primary={true} onClick={this.onClearClick.bind(this)} />
+            {
+              this.state.id && <DeleteTodoButton todoId={this.state.id} 
+                                                  onDelete={this.onDelete.bind(this)} 
                                                   sortCriteria={this.props.sortCriteria} />
-              }
-              {
-                this.state.id && <UpdateTodoButton  onUpdate={this.onUpdate.bind(this)} 
-                                                    todo={this.state} disabled={!this.state.isValid}
-                                                    sortCriteria={this.props.sortCriteria} />
-              }
-            </ToolbarGroup>
-          </Toolbar>
-        </form>
+            }
+            {
+              !this.state.id && userById && <AddTodoButton onAdd={this.onAdd.bind(this)} 
+                                                todo={this.state} user={userById} 
+                                                disabled={!this.state.isValid}
+                                                sortCriteria={this.props.sortCriteria} />
+            }
+            {
+              this.state.id && <UpdateTodoButton  onUpdate={this.onUpdate.bind(this)} 
+                                                  todo={this.state} disabled={!this.state.isValid}
+                                                  sortCriteria={this.props.sortCriteria} />
+            }
+          </ToolbarGroup>
+        </Toolbar>
       </Paper>
     )
   }

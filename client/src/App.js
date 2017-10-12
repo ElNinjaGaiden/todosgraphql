@@ -14,7 +14,7 @@ const networkInterface = createNetworkInterface({
 
 // networkInterface.use([{
 //   applyMiddleware(req, next) {
-//     setTimeout(next, 1000);
+//     setTimeout(next, 3000);
 //   },
 // }]);
 

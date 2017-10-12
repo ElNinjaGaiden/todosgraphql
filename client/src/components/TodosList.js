@@ -4,6 +4,13 @@ import TodoItem from '../components/TodoItem';
 import Divider from 'material-ui/Divider';
 import { todosListQuery } from '../data/Todos';
 import { graphql } from 'react-apollo';
+import LinearProgress from 'material-ui/LinearProgress';
+
+const style = {
+    progressWrapper: {
+        padding: '30px 15px'
+    }
+};
 
 class TodosList extends Component {
 
@@ -16,7 +23,9 @@ class TodosList extends Component {
     render () {
         const { data: {loading, error, allTodos } } = this.props;
         if (loading) {
-            return <p>Loading ...</p>;
+            return  <div style={style.progressWrapper}>
+                        <LinearProgress style={style.progress} mode={"indeterminate"} />
+                    </div>;
         }
         if (error) {
             return <p>{error.message}</p>;
